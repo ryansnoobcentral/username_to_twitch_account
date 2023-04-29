@@ -1,3 +1,6 @@
+// RUN npx webpack EVERYTIME THIS IS FILE IS CHANGED.  WEBPACK ALLOWS NODE.JS TO BE RAN WITHIN THE BROWSER.
+
+
 const {BlizzAPI} = require("blizzapi");
 
 const BnetApi = new BlizzAPI({
@@ -22,6 +25,7 @@ const searchBox = document.getElementById('top-search')
 
 // Parses JSON.
 function parseJson(promise) {
+    console.log(promise);
     return promise.json();
 }
 
