@@ -18,34 +18,67 @@
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarTogglerDemo01">
-            <a class="navbar-brand" href="#">NoobCentral</a>
+            <a class="navbar-brand" href="index.html">NoobCentral</a>
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="index.html">Home</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">Link</a>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown"
+                       aria-expanded="false" id="leaderboards-title">
+                        Leaderboards: shuffle
+                    </a>
+                    <ul class="dropdown-menu" id="leaderboards">
+                        <li>
+                            <button class="dropdown-item">shuffle</button>
+                        </li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li>
+                            <button class="dropdown-item">2v2</button>
+                        </li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li>
+                            <button class="dropdown-item">3v3</button>
+                        </li>
+                    </ul>
                 </li>
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
-                       aria-expanded="false">
-                        Region
+                    <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown"
+                       aria-expanded="false" id="region-title">
+                        Region: US
                     </a>
                     <ul class="dropdown-menu" id="region">
-                        <li><a class="dropdown-item" href="#">US</a></li>
+                        <li>
+                            <button class="dropdown-item">US</button>
+                        </li>
                         <li>
                             <hr class="dropdown-divider">
                         </li>
-                        <li><a class="dropdown-item" href="#">EU</a></li>
+                        <li>
+                            <button class="dropdown-item">EU</button>
+                        </li>
                         <li>
                             <hr class="dropdown-divider">
                         </li>
-                        <li><a class="dropdown-item" href="#">KR</a></li>
+                        <li>
+                            <button class="dropdown-item">KR</button>
+                        </li>
+                    </ul>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown"
+                       aria-expanded="false" id="realm-title">
+                        Realm:
+                    </a>
+                    <ul class="dropdown-menu" id="realm">
                     </ul>
                 </li>
             </ul>
             <form class="d-flex" role="search" id="top-search">
-                <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" name="query">
+                <input class="form-control me-2" type="search" placeholder="Select Realm Then Type Character Name"
+                       aria-label="Search"
+                       name="query">
                 <button class="btn btn-outline-success" type="submit">Search</button>
             </form>
         </div>
@@ -81,27 +114,27 @@
     <div id="twitch-embed"></div>
 </div>
 
-<!-- Load the Twitch embed script -->
-<script src="https://embed.twitch.tv/embed/v1.js"></script>
+<!--&lt;!&ndash; Load the Twitch embed script &ndash;&gt;-->
+<!--<script src="https://embed.twitch.tv/embed/v1.js"></script>-->
 
-<!-- Create a Twitch.Embed object that will render within the "twitch-embed" element. -->
-<script type="text/javascript">
-    var embed = new Twitch.Embed("twitch-embed", {
-        width: "100%",
-        height: "100%",
-        channel: "monstercat",
-        autoplay: false,
-        theme: "dark",
-        muted: true,
-        // Only needed if this page is going to be embedded on other websites
-        parent: ["embed.example.com", "othersite.example.com"]
-    });
+<!--&lt;!&ndash; Create a Twitch.Embed object that will render within the "twitch-embed" element. &ndash;&gt;-->
+<!--<script type="text/javascript">-->
+<!--    var embed = new Twitch.Embed("twitch-embed", {-->
+<!--        width: "100%",-->
+<!--        height: "100%",-->
+<!--        channel: "monstercat",-->
+<!--        autoplay: false,-->
+<!--        theme: "dark",-->
+<!--        muted: true,-->
+<!--        // Only needed if this page is going to be embedded on other websites-->
+<!--        parent: ["embed.example.com", "othersite.example.com"]-->
+<!--    });-->
 
-    embed.addEventListener(Twitch.Embed.VIDEO_READY, () => {
-        var player = embed.getPlayer();
-        player.play();
-    });
-</script>
+<!--    embed.addEventListener(Twitch.Embed.VIDEO_READY, () => {-->
+<!--        var player = embed.getPlayer();-->
+<!--        player.play();-->
+<!--    });-->
+<!--</script>-->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe"
         crossorigin="anonymous"></script>
