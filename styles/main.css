@@ -26,3 +26,8 @@ html, body {
 .dropdown-menu {
     text-align: center;
 }
+
+#realm {
+    max-height: 1000%;
+    overflow-y: auto;
+}
