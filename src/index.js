@@ -73,12 +73,12 @@ searchBox.onsubmit = (ev) => {
     // Query's Image of character.
     BnetApi.query(charRenderImage)
         .then((ev) => {
-            console.log("Character Image parsed", ev.assets[0]);
-            twitchDiv.style.background = ev.assets[0].value;
+            console.log("Character Image parsed", ev.assets[2]);
+            twitchDiv.style.background = `url(${ev.assets[2].value}) no-repeat center center fixed`;
+            twitchDiv.style.backgroundSize = "cover";
         })
         .catch((error) => {
             console.log("Character Image Query Failed", error);
-
         });
 }
 
@@ -172,7 +172,6 @@ function parseCharacter(data) {
 function parseRealms(realmsList) {
     console.log(realmsList);
     allRealms = realmsList.realms.map(realm => realm.name.en_US);
-    console.log("Current realm list for " + regionType, allRealms);
     // Populates realm list in dropdown.
     for (let i = 0; i < allRealms.length; i++) {
         let listItem = document.createElement("li");
