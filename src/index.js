@@ -12,14 +12,16 @@ let BnetApi = new BlizzAPI({
 });
 
 // This gathers a new key to use the Twitch API and creates apiClient to call api with.
-import { AppTokenAuthProvider } from '@twurple/auth';
-import { ApiClient } from '@twurple/api';
+import {AppTokenAuthProvider} from '@twurple/auth';
+import {ApiClient, HelixStream} from '@twurple/api';
 
 const twitchClientId = '87ujzh69at7evv4anwrrix45r8ynlx';
 const twitchClientSecret = '77nt7xhgxutssv1euf7dqj6g5v1tj1';
 const authProvider = new AppTokenAuthProvider(twitchClientId, twitchClientSecret);
-const apiClient = new ApiClient({ authProvider });
-apiClient.callApi()
+const apiClient = new ApiClient({authProvider});
+
+// Testing twitch API
+getWOWSection();
 
 // Const for Armory Link
 const armoryDiv = document.getElementById('armory');
@@ -238,4 +240,16 @@ function updateArmoryLinkString() {
     armoryLinkStringUS = "https://worldofwarcraft.blizzard.com/en-us/character/us/" + curRealm + "/" + curChar[1];
     armoryLinkStringEU = "https://worldofwarcraft.blizzard.com/en-gb/character/eu/" + curRealm + "/ " + curChar[1];
     armoryLinkStringKR = "https://worldofwarcraft.blizzard.com/ko-kr/character/kr/" + curRealm + "/ " + curChar[1];
+}
+
+// This allows me to get all streams associated with world of warcraft.
+async function getWOWSection() {
+    const game = await (await apiClient.games.getGameByName('World of Warcraft')).getStreamsPaginated().getAll();
+    console.log(game);
+    let allStream = [];
+    for (let i = 0; i < game.length; i++) {
+        let helixStreamName = game[i].userName;
+        allStream.push(helixStreamName)
+    }
+    console.log(allStream);
 }
