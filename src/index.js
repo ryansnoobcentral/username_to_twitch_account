@@ -1,5 +1,32 @@
 // RUN npx webpack EVERYTIME THIS IS FILE IS CHANGED.  WEBPACK ALLOWS NODE.JS TO BE RAN WITHIN THE BROWSER.
 
+const {BlizzAPI} = require("blizzapi");
+// Variable Client ID.
+const wowClientID = "2f7360b493cf41c9bc8941dc647dbb26";
+// Variable Client Secret.
+const wowClientSecret = "rEEM3k7nfo1WJaTpSQR1PR53vlwZ8KRA";
+// Default key.
+// This gathers a new key to use the Blizzard API.
+let BnetApi = new BlizzAPI({
+    region: 'us', clientId: wowClientID, clientSecret: wowClientSecret,
+});
+
+// This gathers a new key to use the Twitch API and creates apiClient to call api with.
+import { AppTokenAuthProvider } from '@twurple/auth';
+import { ApiClient } from '@twurple/api';
+
+const twitchClientId = '87ujzh69at7evv4anwrrix45r8ynlx';
+const twitchClientSecret = '77nt7xhgxutssv1euf7dqj6g5v1tj1';
+const authProvider = new AppTokenAuthProvider(twitchClientId, twitchClientSecret);
+const apiClient = new ApiClient({ authProvider });
+apiClient.callApi()
+
+// Const for Armory Link
+const armoryDiv = document.getElementById('armory');
+// Const for possible Twitch links
+const twitchLinkDiv = document.getElementById('twitch.tv');
+// Consts for image div.
+const imgDiv = document.getElementById('character-picture');
 // Const for twitch div.
 const twitchDiv = document.getElementById('twitch-embed');
 // Const for search within dropdown
@@ -38,15 +65,14 @@ let pvpQueryString = "/profile/wow/character/" + curRealm + "/" + curChar[1] + "
 // /profile/wow/character/{realm-slug}/{character-name}/character-media
 let charRenderImage = "/profile/wow/character/" + curRealm + "/" + curChar[1] + "/character-media"
     + "?namespace=profile-" + regionType;
-// Variable Client ID.
-let clientID = "2f7360b493cf41c9bc8941dc647dbb26";
-// Variable Client Secret.
-let clientSecret = "rEEM3k7nfo1WJaTpSQR1PR53vlwZ8KRA";
 // Variable for dropdown items.
 let dropdownItems;
 // Variable for dropdown dividers.
 let dropdownDivider;
-
+// Variable for armory Link.
+let armoryLinkStringUS = "https://worldofwarcraft.blizzard.com/en-us/character/us/" + curRealm + "/" + curChar[1];
+let armoryLinkStringEU = "https://worldofwarcraft.blizzard.com/en-gb/character/eu/" + curRealm + "/ " + curChar[1];
+let armoryLinkStringKR = "https://worldofwarcraft.blizzard.com/ko-kr/character/kr/" + curRealm + "/ " + curChar[1];
 
 // Search box action listener.
 searchBox.onsubmit = (ev) => {
@@ -61,6 +87,7 @@ searchBox.onsubmit = (ev) => {
     ev.preventDefault();
     updateCharQueryString();
     updatePvpQueryString();
+    updateArmoryLinkString();
     // I used the supplied libraries method of query, which ends up returning a JSON instead of a promise like fetch.
     // However, in a sense this is just fetch with the return promise.json(). The API has a default time out of 10 seconds
     // if this is not found.
@@ -68,14 +95,14 @@ searchBox.onsubmit = (ev) => {
         .then(parseCharacter)
         .catch((error) => {
             console.log("Character Query Failed", error);
-
+            alert("Character Not Found");
         });
     // Query's Image of character.
     BnetApi.query(charRenderImage)
         .then((ev) => {
             console.log("Character Image parsed", ev.assets[2]);
-            twitchDiv.style.background = `url(${ev.assets[2].value}) no-repeat center center fixed`;
-            twitchDiv.style.backgroundSize = "cover";
+            imgDiv.style.background = `url(${ev.assets[2].value}) no-repeat center`;
+            imgDiv.style.backgroundSize = "contain";
         })
         .catch((error) => {
             console.log("Character Image Query Failed", error);
@@ -97,7 +124,7 @@ region.onclick = (ev) => {
     regionTitle.innerText = "Region: " + regionType.toUpperCase();
     BnetApi = new BlizzAPI({
         region: regionType,
-        clientId: clientID,
+        clientId: wowClientID,
         clientSecret: clientSecret,
     });
     // Updates realm list.
@@ -108,6 +135,7 @@ region.onclick = (ev) => {
         });
     updateCharQueryString();
     updatePvpQueryString();
+    updateArmoryLinkString();
 }
 
 // Realms dropdown action listener.
@@ -119,6 +147,7 @@ realms.onclick = (ev) => {
     realmsTitle.innerText = "Realm: " + ev.target.innerText;
     updateCharQueryString();
     updatePvpQueryString();
+    updateArmoryLinkString();
 }
 
 // Search within realms dropdown listener.
@@ -148,14 +177,6 @@ dropdownSearch.addEventListener("input", function () {
     });
 });
 
-// This gathers a new key to use the Blizzard API.
-const {BlizzAPI} = require("blizzapi");
-
-// Default key.
-let BnetApi = new BlizzAPI({
-    region: 'us', clientId: clientID, clientSecret: clientSecret,
-});
-
 // Default gather of realms.
 BnetApi.query("/data/wow/realm/index?namespace=dynamic-" + regionType)
     .then(parseRealms)
@@ -165,7 +186,15 @@ BnetApi.query("/data/wow/realm/index?namespace=dynamic-" + regionType)
 
 // Parses character data from API.
 function parseCharacter(data) {
+    console.log("region ", regionType);
     console.log(data);
+    if (regionType === "us") {
+        armoryDiv.setAttribute("href", armoryLinkStringUS);
+    } else if (regionType === "eu") {
+        armoryDiv.setAttribute("href", armoryLinkStringEU);
+    } else if (regionType === "kr") {
+        armoryDiv.setAttribute("href", armoryLinkStringKR);
+    }
 }
 
 // Parses realm data from API.
@@ -173,6 +202,8 @@ function parseRealms(realmsList) {
     console.log(realmsList);
     allRealms = realmsList.realms.map(realm => realm.name.en_US);
     // Populates realm list in dropdown.
+    realms.getElementsByClassName('dropdown-divider');
+    realms.getElementsByClassName('dropdown-item');
     for (let i = 0; i < allRealms.length; i++) {
         let listItem = document.createElement("li");
         let button = document.createElement("button");
@@ -200,4 +231,11 @@ function updateCharQueryString() {
 function updatePvpQueryString() {
     pvpQueryString = "/profile/wow/character/" + curRealm + "/" + curChar[1].toLowerCase() + "/pvp-bracket/"
         + leaderboardType + "?namespace=profile-" + regionType;
+}
+
+// Updates armory link string.
+function updateArmoryLinkString() {
+    armoryLinkStringUS = "https://worldofwarcraft.blizzard.com/en-us/character/us/" + curRealm + "/" + curChar[1];
+    armoryLinkStringEU = "https://worldofwarcraft.blizzard.com/en-gb/character/eu/" + curRealm + "/ " + curChar[1];
+    armoryLinkStringKR = "https://worldofwarcraft.blizzard.com/ko-kr/character/kr/" + curRealm + "/ " + curChar[1];
 }

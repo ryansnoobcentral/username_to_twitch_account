@@ -1,5 +1,7 @@
 {
   "dependencies": {
+    "@twurple/api": "^6.2.0",
+    "@twurple/auth": "^6.2.0",
     "blizzapi": "^2.6.0"
   },
   "devDependencies": {

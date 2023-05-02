@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="styles/main.css">
 </head>
 <body>
+
 <nav class="navbar navbar-expand-sm bg-body-tertiary">
     <div class="container-fluid">
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo01"
@@ -89,30 +90,36 @@
     <nav class="col-sm-2">
         <ul class="nav flex-column">
             <li class="nav-item">
-                <a class="nav-link active" aria-current="page" href="#">Active</a>
+                <a class="nav-link" href="#" id="armory" target="_blank">Armory</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="#">Link</a>
+                <a class="nav-link" href="#" id="twitch.tv" target="_blank">Twitch List</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="#">Link</a>
+                <a class="nav-link" href="#" target="_blank">Link</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link disabled">Disabled</a>
+                <a class="nav-link disabled" target="_blank">Disabled</a>
             </li>
         </ul>
     </nav>
     <main class="col">
         <h1 class="display-1">⚔️FindThem.PVP⚔️</h1>
-        <p class="lead">Type into the search with your favorite World of Warcraft pvper's character name, and we do the
+        <p class="lead">Type into the search with your favorite World of Warcraft pvper's character name, and we do
+            the
             rest!</p>
     </main>
     <div class="col-md-2"></div>
 </div>
 
-<!-- Add a placeholder for the Twitch embed -->
-<div class="d-flex justify-content-center">
-    <div id="twitch-embed"></div>
+<div class="d-flex flex-column">
+
+    <div class="d-flex img-fluid" id="character-picture"></div>
+
+    <!-- Add a placeholder for the Twitch embed -->
+    <div class="d-flex justify-content-center">
+        <div id="twitch-embed"></div>
+    </div>
 </div>
 
 <!--&lt;!&ndash; Load the Twitch embed script &ndash;&gt;-->
