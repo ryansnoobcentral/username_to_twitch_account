@@ -10,7 +10,7 @@
           integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
     <link rel="stylesheet" href="styles/main.css">
 </head>
-<body>
+<body data-bs-theme="dark">
 
 <nav class="navbar navbar-expand-sm bg-body-tertiary">
     <div class="container-fluid">
@@ -90,10 +90,12 @@
     <nav class="col-sm-2">
         <ul class="nav flex-column">
             <li class="nav-item">
-                <a class="nav-link" href="#" id="armory" target="_blank">Armory</a>
+                <a class="nav-link" href="https://worldofwarcraft.blizzard.com/en-us/search" id="armory"
+                   target="_blank">Armory</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="#" id="twitch.tv" target="_blank">Twitch List</a>
+                <a class="nav-link" href="https://www.twitch.tv/directory/game/World%20of%20Warcraft" id="twitch.tv"
+                   target="_blank">Twitch List</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="#" target="_blank">Link</a>
@@ -113,40 +115,17 @@
 </div>
 
 <div class="d-flex flex-column">
-
     <div class="d-flex img-fluid" id="character-picture"></div>
-
-    <!-- Add a placeholder for the Twitch embed -->
     <div class="d-flex justify-content-center">
         <div id="twitch-embed"></div>
     </div>
 </div>
 
-<!--&lt;!&ndash; Load the Twitch embed script &ndash;&gt;-->
-<!--<script src="https://embed.twitch.tv/embed/v1.js"></script>-->
-
-<!--&lt;!&ndash; Create a Twitch.Embed object that will render within the "twitch-embed" element. &ndash;&gt;-->
-<!--<script type="text/javascript">-->
-<!--    var embed = new Twitch.Embed("twitch-embed", {-->
-<!--        width: "100%",-->
-<!--        height: "100%",-->
-<!--        channel: "monstercat",-->
-<!--        autoplay: false,-->
-<!--        theme: "dark",-->
-<!--        muted: true,-->
-<!--        // Only needed if this page is going to be embedded on other websites-->
-<!--        parent: ["embed.example.com", "othersite.example.com"]-->
-<!--    });-->
-
-<!--    embed.addEventListener(Twitch.Embed.VIDEO_READY, () => {-->
-<!--        var player = embed.getPlayer();-->
-<!--        player.play();-->
-<!--    });-->
-<!--</script>-->
+<!-- Load the Twitch embed script -->
+<script src="https://embed.twitch.tv/embed/v1.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe"
         crossorigin="anonymous"></script>
-<!--<script src="scripts/main.js"></script>-->
 <script src="dist/bundle.js"></script>
 </body>
 </html>

@@ -3,7 +3,7 @@ html, body {
     width: 100%;
     margin: 0;
     padding: 0;
-    overflow: hidden;
+    overflow: auto;
 }
 
 * {
@@ -30,22 +30,6 @@ html, body {
     padding: 0;
 }
 
-#character-picture {
-    height: 100% !important;
-    width: 100% !important;
-    margin-top: 0;
-    padding: 0;
-    object-fit: cover;
-}
-
-#twitch-embed {
-    height: 100% !important;
-    width: 100% !important;
-    margin-top: 0;
-    padding: 0;
-    object-fit: cover;
-}
-
 .dropdown-menu {
     text-align: center;
 }
@@ -53,4 +37,54 @@ html, body {
 #realm {
     max-height: 1000%;
     overflow-y: auto;
+}
+
+@media screen and (min-width: 800px) {
+    #character-picture {
+        height: 300% !important;
+        width: 100% !important;
+        margin: 0;
+        padding: 0;
+        object-fit: cover;
+        overflow: auto;
+        background-image: url('../World-of-Warcraft-Dragonflight.jpg');
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+        background-size: cover;
+    }
+
+    #twitch-embed {
+        height: 300% !important;
+        width: 100% !important;
+        margin: 0;
+        padding: 0;
+        object-fit: cover;
+        overflow: auto;
+        background-color: black;
+    }
+}
+
+@media screen and (max-width: 799px) {
+    #character-picture {
+        height: 150% !important;
+        width: 100% !important;
+        margin: 0;
+        padding: 0;
+        object-fit: cover;
+        overflow: auto;
+        background-image: url('../World-of-Warcraft-Dragonflight.jpg');
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+        background-size: cover;
+    }
+
+    #twitch-embed {
+        height: 150% !important;
+        width: 100% !important;
+        margin: 0;
+        padding: 0;
+        object-fit: cover;
+        overflow: auto;
+        background-color: black;
+    }
 }

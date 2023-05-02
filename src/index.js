@@ -24,10 +24,6 @@ const authProvider = new AppTokenAuthProvider(twitchClientId, twitchClientSecret
 const apiClient = new ApiClient({authProvider});
 //endregion
 
-// Testing twitch API
-getWOWSection();
-
-
 //region Start of variables.....
 // Const for Armory Link
 const armoryDiv = document.getElementById('armory');
@@ -65,23 +61,35 @@ let allRealms;
 let curRealm = "illidan";
 // Variable for search string.
 // /profile/wow/character/{realmSlug}/{characterName}
-let charQueryString = "/profile/wow/character/" + curRealm + "/" + curChar[1] + "?namespace=profile-" + regionType;
+let charQueryString = "/profile/wow/character/" + curRealm + "/" + curChar + "?namespace=profile-" + regionType;
 // Variable for pvp string.
-let pvpQueryString = "/profile/wow/character/" + curRealm + "/" + curChar[1] + "/pvp-bracket/"
+let pvpQueryString = "/profile/wow/character/" + curRealm + "/" + curChar + "/pvp-bracket/"
     + leaderboardType + "?namespace=profile-" + regionType;
 // Variable for character render.
 // /profile/wow/character/{realm-slug}/{character-name}/character-media
-let charRenderImage = "/profile/wow/character/" + curRealm + "/" + curChar[1] + "/character-media"
+let charRenderImage = "/profile/wow/character/" + curRealm + "/" + curChar + "/character-media"
     + "?namespace=profile-" + regionType;
 // Variable for dropdown items.
 let dropdownItems;
 // Variable for dropdown dividers.
 let dropdownDivider;
 // Variable for armory Link.
-let armoryLinkStringUS = "https://worldofwarcraft.blizzard.com/en-us/character/us/" + curRealm + "/" + curChar[1];
-let armoryLinkStringEU = "https://worldofwarcraft.blizzard.com/en-gb/character/eu/" + curRealm + "/ " + curChar[1];
-let armoryLinkStringKR = "https://worldofwarcraft.blizzard.com/ko-kr/character/kr/" + curRealm + "/ " + curChar[1];
+let armoryLinkStringUS = "https://worldofwarcraft.blizzard.com/en-us/character/us/" + curRealm + "/" + curChar;
+let armoryLinkStringEU = "https://worldofwarcraft.blizzard.com/en-gb/character/eu/" + curRealm + "/ " + curChar;
+let armoryLinkStringKR = "https://worldofwarcraft.blizzard.com/ko-kr/character/kr/" + curRealm + "/ " + curChar;
+// Variable for all WOW steams.
+let allStream = [];
+// Variable for current stream.
+let curStream = null;
 //endregion End of variables.
+
+//region Default gather of realms.
+BnetApi.query("/data/wow/realm/index?namespace=dynamic-" + regionType)
+    .then(parseRealms)
+    .catch(error => {
+        console.log("Error getting realms", error);
+    });
+//endregion
 
 // Search box action listener.
 searchBox.onsubmit = (ev) => {
@@ -90,8 +98,10 @@ searchBox.onsubmit = (ev) => {
     const formData = new FormData(ev.target);
     console.log(formData);
     // This logs the FormData object's values into the variable of curChar.
-    for (curChar of formData.entries()) {
-        console.log(`${curChar[0]}, ${curChar[1]}`);
+    for (let parsedForm of formData.entries()) {
+        console.log(`${parsedForm[0]}, ${parsedForm[1]}`);
+        curChar = parsedForm[1].toLowerCase();
+        console.log("Current Character " + curChar);
     }
     ev.preventDefault();
     updateCharQueryString();
@@ -110,7 +120,7 @@ searchBox.onsubmit = (ev) => {
     BnetApi.query(charRenderImage)
         .then((ev) => {
             console.log("Character Image parsed", ev.assets[2]);
-            imgDiv.style.background = `url(${ev.assets[2].value}) no-repeat center center`;
+            imgDiv.style.background = `url(${ev.assets[2].value}) no-repeat center center fixed`;
             imgDiv.style.backgroundSize = "cover";
         })
         .catch((error) => {
@@ -162,7 +172,6 @@ realms.onclick = (ev) => {
 // Search within realms dropdown listener.
 dropdownSearch.addEventListener("input", function () {
     const searchTerm = dropdownSearch.value.toLowerCase();
-
     let i = 0;
     dropdownItems.forEach(function (item) {
         i++;
@@ -185,13 +194,6 @@ dropdownSearch.addEventListener("input", function () {
         }
     });
 });
-
-// Default gather of realms.
-BnetApi.query("/data/wow/realm/index?namespace=dynamic-" + regionType)
-    .then(parseRealms)
-    .catch(error => {
-        console.log("Error getting realms", error);
-    });
 
 // Parses character data from API.
 function parseCharacter(data) {
@@ -230,33 +232,75 @@ function parseRealms(realmsList) {
 
 // Updates character query string.
 function updateCharQueryString() {
-    charQueryString = "/profile/wow/character/" + curRealm + "/" + curChar[1].toLowerCase()
+    charQueryString = "/profile/wow/character/" + curRealm + "/" + curChar
         + "?namespace=profile-" + regionType;
-    charRenderImage = charRenderImage = "/profile/wow/character/" + curRealm + "/" + curChar[1] + "/character-media"
+    charRenderImage = charRenderImage = "/profile/wow/character/" + curRealm + "/" + curChar + "/character-media"
         + "?namespace=profile-" + regionType;
 }
 
 // Updates pvp query string.
 function updatePvpQueryString() {
-    pvpQueryString = "/profile/wow/character/" + curRealm + "/" + curChar[1].toLowerCase() + "/pvp-bracket/"
+    pvpQueryString = "/profile/wow/character/" + curRealm + "/" + curChar + "/pvp-bracket/"
         + leaderboardType + "?namespace=profile-" + regionType;
 }
 
 // Updates armory link string.
 function updateArmoryLinkString() {
-    armoryLinkStringUS = "https://worldofwarcraft.blizzard.com/en-us/character/us/" + curRealm + "/" + curChar[1];
-    armoryLinkStringEU = "https://worldofwarcraft.blizzard.com/en-gb/character/eu/" + curRealm + "/ " + curChar[1];
-    armoryLinkStringKR = "https://worldofwarcraft.blizzard.com/ko-kr/character/kr/" + curRealm + "/ " + curChar[1];
+    armoryLinkStringUS = "https://worldofwarcraft.blizzard.com/en-us/character/us/" + curRealm + "/" + curChar;
+    armoryLinkStringEU = "https://worldofwarcraft.blizzard.com/en-gb/character/eu/" + curRealm + "/ " + curChar;
+    armoryLinkStringKR = "https://worldofwarcraft.blizzard.com/ko-kr/character/kr/" + curRealm + "/ " + curChar;
 }
 
 // This allows me to get all streams associated with world of warcraft.
 async function getWOWSection() {
-    const game = await (await apiClient.games.getGameByName('World of Warcraft')).getStreamsPaginated().getAll();
+    const game = await (await apiClient.games.getGameByName('World of Warcraft'))
+        .getStreamsPaginated().getAll();
     console.log(game);
-    let allStream = [];
     for (let i = 0; i < game.length; i++) {
         let helixStreamName = game[i].userName;
         allStream.push(helixStreamName)
     }
     console.log(allStream);
+    curStream = allStream[0];
 }
+
+//region twitch embedded player
+getWOWSection();
+console.log("First stream", allStream[0]);
+
+const timeout = 20000; // 10 seconds timeout
+const interval = 100; // 100ms interval between checks
+let timer = 0;
+
+function waitForInitStream() {
+    if (timer < timeout) {
+        if (curStream === null) {
+            timer += interval;
+            setTimeout(waitForInitStream, interval);
+        } else {
+            var embed = new Twitch.Embed("twitch-embed", {
+                width: "100%",
+                height: "100%",
+                channel: curStream,
+                autoplay: false,
+                theme: "dark",
+                muted: true,
+                // Only needed if this page is going to be embedded on other websites
+                parent: ["embed.example.com", "othersite.example.com"]
+            });
+
+            embed.addEventListener(Twitch.Embed.VIDEO_READY, () => {
+                var player = embed.getPlayer();
+                player.play();
+            });
+            console.log("First stream found");
+        }
+    } else {
+        console.log("Timeout exceeded");
+    }
+}
+
+//
+waitForInitStream();
+
+//endregion
