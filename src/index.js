@@ -1,5 +1,11 @@
 // RUN npx webpack EVERYTIME THIS IS FILE IS CHANGED.  WEBPACK ALLOWS NODE.JS TO BE RAN WITHIN THE BROWSER.
 
+
+// This gathers a new key to use the Twitch API and creates apiClient to call api with.
+import {AppTokenAuthProvider} from '@twurple/auth';
+import {ApiClient, HelixStream} from '@twurple/api';
+
+//region API KEYSSSSS
 const {BlizzAPI} = require("blizzapi");
 // Variable Client ID.
 const wowClientID = "2f7360b493cf41c9bc8941dc647dbb26";
@@ -12,17 +18,17 @@ let BnetApi = new BlizzAPI({
 });
 
 // This gathers a new key to use the Twitch API and creates apiClient to call api with.
-import {AppTokenAuthProvider} from '@twurple/auth';
-import {ApiClient, HelixStream} from '@twurple/api';
-
 const twitchClientId = '87ujzh69at7evv4anwrrix45r8ynlx';
 const twitchClientSecret = '77nt7xhgxutssv1euf7dqj6g5v1tj1';
 const authProvider = new AppTokenAuthProvider(twitchClientId, twitchClientSecret);
 const apiClient = new ApiClient({authProvider});
+//endregion
 
 // Testing twitch API
 getWOWSection();
 
+
+//region Start of variables.....
 // Const for Armory Link
 const armoryDiv = document.getElementById('armory');
 // Const for possible Twitch links
@@ -75,6 +81,7 @@ let dropdownDivider;
 let armoryLinkStringUS = "https://worldofwarcraft.blizzard.com/en-us/character/us/" + curRealm + "/" + curChar[1];
 let armoryLinkStringEU = "https://worldofwarcraft.blizzard.com/en-gb/character/eu/" + curRealm + "/ " + curChar[1];
 let armoryLinkStringKR = "https://worldofwarcraft.blizzard.com/ko-kr/character/kr/" + curRealm + "/ " + curChar[1];
+//endregion End of variables.
 
 // Search box action listener.
 searchBox.onsubmit = (ev) => {
@@ -103,8 +110,8 @@ searchBox.onsubmit = (ev) => {
     BnetApi.query(charRenderImage)
         .then((ev) => {
             console.log("Character Image parsed", ev.assets[2]);
-            imgDiv.style.background = `url(${ev.assets[2].value}) no-repeat center`;
-            imgDiv.style.backgroundSize = "contain";
+            imgDiv.style.background = `url(${ev.assets[2].value}) no-repeat center center`;
+            imgDiv.style.backgroundSize = "cover";
         })
         .catch((error) => {
             console.log("Character Image Query Failed", error);
