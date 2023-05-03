@@ -29,6 +29,8 @@ const apiClient = new ApiClient({authProvider});
 const armoryDiv = document.getElementById('armory');
 // Const for possible Twitch links
 const twitchLinkDiv = document.getElementById('twitch.tv');
+// Const for closes matching twitch link.
+const twitchClosesMatchDiv = document.getElementById('closes-match');
 // Consts for image div.
 const imgDiv = document.getElementById('character-picture');
 // Const for twitch div.
@@ -81,6 +83,8 @@ let armoryLinkStringKR = "https://worldofwarcraft.blizzard.com/ko-kr/character/k
 let allStream = [];
 // Variable for current stream.
 let curStream = null;
+// Variable for allStreamObjects.
+let game;
 //endregion End of variables.
 
 //region Default gather of realms.
@@ -206,6 +210,16 @@ function parseCharacter(data) {
     } else if (regionType === "kr") {
         armoryDiv.setAttribute("href", armoryLinkStringKR);
     }
+    let closestMatch = findClosestMatch(curChar, allStream);
+    curStream = closestMatch.match;
+    twitchClosesMatchDiv.setAttribute("href", "https://www.twitch.tv/" + curStream);
+    startStream();
+    alert("Closes matching stream will now be playing!  Check to see if it's correct.");
+    console.log("Closes matching stream. ", closestMatch.match);
+    console.log("Index of closes matching stream. ", closestMatch.index);
+    let userIDofClosesMatch = apiClient.channels.getChannelInfoById(parseInt(game[closestMatch.index].userId));
+    console.log("twitch ID of stream", userIDofClosesMatch);
+    console.log("Twitch stream of user", apiClient.streams.getStreamByUserId(parseInt(game[closestMatch.index].userId)));
 }
 
 // Parses realm data from API.
@@ -253,7 +267,7 @@ function updateArmoryLinkString() {
 
 // This allows me to get all streams associated with world of warcraft.
 async function getWOWSection() {
-    const game = await (await apiClient.games.getGameByName('World of Warcraft'))
+    game = await (await apiClient.games.getGameByName('World of Warcraft'))
         .getStreamsPaginated().getAll();
     console.log(game);
     for (let i = 0; i < game.length; i++) {
@@ -278,21 +292,7 @@ function waitForInitStream() {
             timer += interval;
             setTimeout(waitForInitStream, interval);
         } else {
-            var embed = new Twitch.Embed("twitch-embed", {
-                width: "100%",
-                height: "100%",
-                channel: curStream,
-                autoplay: false,
-                theme: "dark",
-                muted: true,
-                // Only needed if this page is going to be embedded on other websites
-                parent: ["embed.example.com", "othersite.example.com"]
-            });
-
-            embed.addEventListener(Twitch.Embed.VIDEO_READY, () => {
-                var player = embed.getPlayer();
-                player.play();
-            });
+            startStream();
             console.log("First stream found");
         }
     } else {
@@ -304,3 +304,71 @@ function waitForInitStream() {
 waitForInitStream();
 
 //endregion
+
+//region Finding the closest matching stream.
+function findClosestMatch(target, list) {
+    let closestMatch = "";
+    let closestMatchDistance = Infinity;
+    let indexOfClosestMatch = 0;
+
+    for (let i = 0; i < list.length; i++) {
+        const distance = levenshteinDistance(target, list[i]);
+        if (distance < closestMatchDistance) {
+            closestMatch = list[i];
+            closestMatchDistance = distance;
+            indexOfClosestMatch = i;
+        }
+    }
+
+    return {match: closestMatch, index: indexOfClosestMatch};
+}
+
+function levenshteinDistance(a, b) {
+    if (a.length === 0) return b.length;
+    if (b.length === 0) return a.length;
+
+    const matrix = [];
+
+    for (let i = 0; i <= b.length; i++) {
+        matrix[i] = [i];
+    }
+
+    for (let j = 0; j <= a.length; j++) {
+        matrix[0][j] = j;
+    }
+
+    for (let i = 1; i <= b.length; i++) {
+        for (let j = 1; j <= a.length; j++) {
+            if (b.charAt(i - 1) === a.charAt(j - 1)) {
+                matrix[i][j] = matrix[i - 1][j - 1];
+            } else {
+                matrix[i][j] = Math.min(
+                    matrix[i - 1][j - 1] + 1,  // substitution
+                    matrix[i][j - 1] + 1,      // insertion
+                    matrix[i - 1][j] + 1       // deletion
+                );
+            }
+        }
+    }
+
+    return matrix[b.length][a.length];
+}
+
+//endregion
+
+function startStream() {
+    twitchDiv.innerHTML = "";
+    var embed = new Twitch.Embed("twitch-embed", {
+        width: "100%",
+        height: "100%",
+        channel: curStream,
+        autoplay: false,
+        theme: "dark",
+        muted: true,
+    });
+
+    embed.addEventListener(Twitch.Embed.VIDEO_READY, () => {
+        var player = embed.getPlayer();
+        player.play();
+    });
+}
