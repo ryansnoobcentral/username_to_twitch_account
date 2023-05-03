@@ -1,6 +1,5 @@
 // RUN npx webpack EVERYTIME THIS IS FILE IS CHANGED.  WEBPACK ALLOWS NODE.JS TO BE RAN WITHIN THE BROWSER.
 
-
 // This gathers a new key to use the Twitch API and creates apiClient to call api with.
 import {AppTokenAuthProvider} from '@twurple/auth';
 import {ApiClient, HelixStream} from '@twurple/api';
@@ -16,7 +15,6 @@ const wowClientSecret = "rEEM3k7nfo1WJaTpSQR1PR53vlwZ8KRA";
 let BnetApi = new BlizzAPI({
     region: 'us', clientId: wowClientID, clientSecret: wowClientSecret,
 });
-
 // This gathers a new key to use the Twitch API and creates apiClient to call api with.
 const twitchClientId = '87ujzh69at7evv4anwrrix45r8ynlx';
 const twitchClientSecret = '77nt7xhgxutssv1euf7dqj6g5v1tj1';
@@ -86,6 +84,10 @@ let curStream = null;
 // Variable for allStreamObjects.
 let game;
 //endregion End of variables.
+
+// Test
+// console.log("Test query for all characters", BnetApi.query("/data/wow/search/realm?namespace=dynamic-"
+//     + regionType + "&q=utterlycrazy"));
 
 //region Default gather of realms.
 BnetApi.query("/data/wow/realm/index?namespace=dynamic-" + regionType)
@@ -199,6 +201,14 @@ dropdownSearch.addEventListener("input", function () {
     });
 });
 
+// Streams list listener
+twitchLinkDiv.addEventListener("click", function (ev) {
+    console.log(ev.target.innerText);
+    curStream = ev.target.innerText;
+    twitchClosesMatchDiv.setAttribute("href", "https://www.twitch.tv/" + curStream);
+    startStream();
+});
+
 // Parses character data from API.
 function parseCharacter(data) {
     console.log("region ", regionType);
@@ -210,16 +220,18 @@ function parseCharacter(data) {
     } else if (regionType === "kr") {
         armoryDiv.setAttribute("href", armoryLinkStringKR);
     }
-    let closestMatch = findClosestMatch(curChar, allStream);
-    curStream = closestMatch.match;
+    let closestMatch = findClosestMatches(curChar, allStream, 20);
+    console.log("closest match array", closestMatch);
+    curStream = closestMatch[0].match;
     twitchClosesMatchDiv.setAttribute("href", "https://www.twitch.tv/" + curStream);
     startStream();
-    alert("Closes matching stream will now be playing!  Check to see if it's correct.");
-    console.log("Closes matching stream. ", closestMatch.match);
+    alert("Closest matching stream will now be playing!  Check to see if it's correct.");
+    updatePossibleStreamLinks(closestMatch);
+    console.log("Closest matching stream. ", closestMatch[0].match);
     console.log("Index of closes matching stream. ", closestMatch.index);
-    let userIDofClosesMatch = apiClient.channels.getChannelInfoById(parseInt(game[closestMatch.index].userId));
-    console.log("twitch ID of stream", userIDofClosesMatch);
-    console.log("Twitch stream of user", apiClient.streams.getStreamByUserId(parseInt(game[closestMatch.index].userId)));
+    // let userIDofClosesMatch = apiClient.channels.getChannelInfoById(parseInt(game[closestMatch[0].index].userId));
+    // console.log("twitch ID of stream", userIDofClosesMatch);
+    // console.log("Twitch stream of user", apiClient.streams.getStreamByUserId(parseInt(game[closestMatch[0].index].userId)));
 }
 
 // Parses realm data from API.
@@ -265,6 +277,18 @@ function updateArmoryLinkString() {
     armoryLinkStringKR = "https://worldofwarcraft.blizzard.com/ko-kr/character/kr/" + curRealm + "/ " + curChar;
 }
 
+// Updates the possible stream links dropdown
+function updatePossibleStreamLinks(closestMatches) {
+    twitchLinkDiv.innerHTML = "";
+
+    for (let i = 0; i < closestMatches.length; i++) {
+        let li = document.createElement("li");
+        li.classList.add("dropdown-item");
+        li.innerText = closestMatches[i].match;
+        twitchLinkDiv.append(li);
+    }
+}
+
 // This allows me to get all streams associated with world of warcraft.
 async function getWOWSection() {
     game = await (await apiClient.games.getGameByName('World of Warcraft'))
@@ -300,27 +324,36 @@ function waitForInitStream() {
     }
 }
 
-//
 waitForInitStream();
-
 //endregion
 
-//region Finding the closest matching stream.
-function findClosestMatch(target, list) {
-    let closestMatch = "";
-    let closestMatchDistance = Infinity;
-    let indexOfClosestMatch = 0;
+//region Finding the closest matching streams.
+function findClosestMatches(target, list, n) {
+    let closestMatches = [];
+    let distances = [];
 
     for (let i = 0; i < list.length; i++) {
         const distance = levenshteinDistance(target, list[i]);
-        if (distance < closestMatchDistance) {
-            closestMatch = list[i];
-            closestMatchDistance = distance;
-            indexOfClosestMatch = i;
-        }
+        distances.push(distance);
     }
 
-    return {match: closestMatch, index: indexOfClosestMatch};
+    for (let i = 0; i < n; i++) {
+        let closestMatchIndex = 0;
+        let closestMatchDistance = Infinity;
+
+        for (let j = 0; j < distances.length; j++) {
+            if (distances[j] < closestMatchDistance) {
+                closestMatchIndex = j;
+                closestMatchDistance = distances[j];
+            }
+        }
+
+        closestMatches.push({match: list[closestMatchIndex], index: closestMatchIndex});
+        distances.splice(closestMatchIndex, 1);
+        list.splice(closestMatchIndex, 1);
+    }
+
+    return closestMatches;
 }
 
 function levenshteinDistance(a, b) {
