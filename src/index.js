@@ -150,7 +150,7 @@ region.onclick = (ev) => {
     BnetApi = new BlizzAPI({
         region: regionType,
         clientId: wowClientID,
-        clientSecret: clientSecret,
+        clientSecret: wowClientSecret,
     });
     // Updates realm list.
     BnetApi.query("/data/wow/realm/index?namespace=dynamic-" + regionType)
