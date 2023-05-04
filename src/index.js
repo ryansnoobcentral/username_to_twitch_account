@@ -136,43 +136,51 @@ searchBox.onsubmit = (ev) => {
 
 // Leaderboards dropdown action listener.
 leaderboards.onclick = (ev) => {
-    console.log("Leaderboards ", ev.target.innerText);
-    leaderboardType = ev.target.innerText.toLowerCase();
-    leaderboardsTitle.innerText = "Leaderboards: " + leaderboardType;
-    updatePvpQueryString();
+    if (ev.target.nodeName === "BUTTON") {
+        console.log("Leaderboards ", ev.target.innerText);
+        leaderboardType = ev.target.innerText.toLowerCase();
+        leaderboardsTitle.innerText = "Leaderboards: " + leaderboardType;
+        updatePvpQueryString();
+    }
 }
 
 // Region dropdown action listener.
 region.onclick = (ev) => {
-    console.log("Region selected", ev.target.innerText);
-    regionType = ev.target.innerText.toLowerCase();
-    regionTitle.innerText = "Region: " + regionType.toUpperCase();
-    BnetApi = new BlizzAPI({
-        region: regionType,
-        clientId: wowClientID,
-        clientSecret: wowClientSecret,
-    });
-    // Updates realm list.
-    BnetApi.query("/data/wow/realm/index?namespace=dynamic-" + regionType)
-        .then(parseRealms)
-        .catch(error => {
-            console.log("Error getting realms", error);
+    console.log(ev.target.nodeName);
+    if (ev.target.nodeName === "BUTTON") {
+        console.log("Region selected", ev.target.innerText);
+        regionType = ev.target.innerText.toLowerCase();
+        regionTitle.innerText = "Region: " + regionType.toUpperCase();
+        BnetApi = new BlizzAPI({
+            region: regionType,
+            clientId: wowClientID,
+            clientSecret: wowClientSecret,
         });
-    updateCharQueryString();
-    updatePvpQueryString();
-    updateArmoryLinkString();
+        // Updates realm list.
+        BnetApi.query("/data/wow/realm/index?namespace=dynamic-" + regionType)
+            .then(parseRealms)
+            .catch(error => {
+                console.log("Error getting realms", error);
+            });
+        updateCharQueryString();
+        updatePvpQueryString();
+        updateArmoryLinkString();
+    }
 }
 
 // Realms dropdown action listener.
 realms.onclick = (ev) => {
-    curRealm = ev.target.innerText.toLowerCase()
-        .replace(" ", "-")
-        .replace("'", "");
-    console.log("Realm selected", curRealm);
-    realmsTitle.innerText = "Realm: " + ev.target.innerText;
-    updateCharQueryString();
-    updatePvpQueryString();
-    updateArmoryLinkString();
+    console.log(ev.target.nodeName);
+    if (ev.target.nodeName === "BUTTON") {
+        curRealm = ev.target.innerText.toLowerCase()
+            .replace(" ", "-")
+            .replace("'", "");
+        console.log("Realm selected", curRealm);
+        realmsTitle.innerText = "Realm: " + ev.target.innerText;
+        updateCharQueryString();
+        updatePvpQueryString();
+        updateArmoryLinkString();
+    }
 }
 
 // Search within realms dropdown listener.
@@ -239,8 +247,17 @@ function parseRealms(realmsList) {
     console.log(realmsList);
     allRealms = realmsList.realms.map(realm => realm.name.en_US);
     // Populates realm list in dropdown.
-    realms.getElementsByClassName('dropdown-divider');
-    realms.getElementsByClassName('dropdown-item');
+    const dividers = realms.getElementsByClassName('dropdown-divider');
+    const items = realms.getElementsByClassName('dropdown-item');
+    // Remove all existing dividers.
+    while (dividers.length > 0) {
+        dividers[0].remove();
+    }
+    // Remove all existing items.
+    while (items.length > 0) {
+        items[0].remove();
+    }
+    // Repopulates all.
     for (let i = 0; i < allRealms.length; i++) {
         let listItem = document.createElement("li");
         let button = document.createElement("button");
